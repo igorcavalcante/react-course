@@ -10,7 +10,7 @@ const burguer = (props) => {
             [...Array(props.ingredients[k])].map((_, i) => <BurguerIngredient key={i} type={k} />)
         ).reduce((acc, value) => acc.concat(value))
 
-        if (ingredients.length == 0) {
+        if (ingredients.length === 0) {
             return <p>Please start inserting ingredients</p>
         } else {
             return ingredients
