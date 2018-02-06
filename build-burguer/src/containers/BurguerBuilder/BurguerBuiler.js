@@ -3,6 +3,8 @@ import Aux from '../../hoc/Aux'
 
 import Burguer from '../../components/Burguer/Burguer'
 import BuildControls from '../../components/Burguer/BuildControls/BuildControls'
+import Modal from '../../components/UI/Modal/Modal'
+import OrderSummary from '../../components/Burguer/OrderSummary/OrderSummary'
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
@@ -23,7 +25,9 @@ class BurguerBuilder extends Component {
                 cheese: 0,
                 meat: 0
             },
-            totalPrice : 0.0
+            totalPrice : 0.0,
+            canPurchase : false,
+            purchasing: false
         }
     }
 
@@ -33,6 +37,7 @@ class BurguerBuilder extends Component {
         const newPrice = this.state.totalPrice + INGREDIENT_PRICES[type]
 
         this.setState({ingredients: newIngredients, totalPrice: newPrice})
+        this.canPurchase(newIngredients)
     }
 
     removeIngredient = type => () => {
@@ -41,6 +46,16 @@ class BurguerBuilder extends Component {
         const newPrice = this.state.totalPrice - INGREDIENT_PRICES[type]
 
         this.setState({ingredients: newIngredients, totalPrice: newPrice})
+        this.canPurchase(newIngredients)
+    }
+
+    canPurchase = ingredients => {
+        const canPurchase = Object.keys(ingredients).map(k => ingredients[k]).reduce((acc, el) => acc + el, 0) > 0
+        this.setState({canPurchase})
+    }
+
+    purshaseHandler = () => {
+        this.setState({purchasing: true})
     }
 
     render() {
@@ -50,8 +65,16 @@ class BurguerBuilder extends Component {
 
         return (
             <Aux>
+                <Modal show={this.state.purchasing}><OrderSummary ingredients={this.state.ingredients}/></Modal>
                 <Burguer ingredients={this.state.ingredients}/>
-                <BuildControls disableds={disableds} addIngredient={this.addIngredient} removeIngredient={this.removeIngredient}/>
+                <BuildControls 
+                    canPurchase={this.state.canPurchase} 
+                    totalPrice={this.state.totalPrice}
+                    disableds={disableds}
+                    addIngredient={this.addIngredient}
+                    removeIngredient={this.removeIngredient}
+                    ordered={this.purshaseHandler}
+                />
             </Aux>
         )
     }
